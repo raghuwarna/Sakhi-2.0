@@ -103,3 +103,6 @@ Independent AI Research Project
 GitHub: https://github.com/raghuwarna
 LinkedIn: https://www.linkedin.com/in/ergurala-raghuwarna/
 Building accessible AI-powered solutions for public information discovery.
+## Documentation
+
+- [System Architecture](docs/architecture.md) – Understand Sakhi 2.0's architecture, components, database, AI model, and request workflow.
