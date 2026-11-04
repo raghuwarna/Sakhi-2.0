@@ -1,0 +1,1352 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sakhi 2.0 - Your government scheme assistant.">
+    <title>Sakhi 2.0 | Government Scheme Assistant</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .message-text {
+            overflow-wrap: anywhere;
+            line-height: 1.7;
+        }
+
+        .message-text p {
+            margin: 0 0 12px;
+        }
+
+        .message-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message-text ul,
+        .message-text ol {
+            margin: 8px 0 14px;
+            padding-left: 24px;
+        }
+
+        .message-text li {
+            margin-bottom: 7px;
+        }
+
+        .message-text strong {
+            font-weight: 700;
+        }
+
+        .message-text code {
+            padding: 2px 5px;
+            border-radius: 4px;
+            background: rgba(120, 120, 120, 0.12);
+            font-family: monospace;
+        }
+
+        .sources-section {
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+
+        .sources-heading {
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .source-card summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            cursor: pointer;
+        }
+
+        .source-filename {
+            font-weight: 600;
+            overflow-wrap: anywhere;
+        }
+
+        .source-page {
+            white-space: nowrap;
+            opacity: 0.8;
+            font-size: 0.9em;
+        }
+
+        .source-metadata {
+            margin-top: 8px;
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+
+        .message-content {
+            min-width: 0;
+        }
+
+        .voice-status {
+            font-size: 12px;
+        }
+
+        .message-tools {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .read-aloud-btn {
+            border: 1px solid #D7DFD2;
+            border-radius: 9px;
+            padding: 7px 11px;
+            background: #F0F3EC;
+            color: #536653;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .read-aloud-btn:hover {
+            background: #E5EBDD;
+        }
+
+        .read-aloud-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .history-item.active {
+            background: #DFE7DA;
+            font-weight: 700;
+        }
+
+        .api-error {
+            color: #9B4545;
+        }
+
+        .language-note {
+            font-size: 10px;
+            color: #858B80;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app-container">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">🌿</div>
+            <div>
+                <h2>Sakhi 2.0</h2>
+                <span>Your scheme companion</span>
+            </div>
+        </div>
+
+        <button class="new-chat-btn" id="newChatBtn">
+            <span>＋</span> New conversation
+        </button>
+
+        <div class="sidebar-section">
+            <p class="section-label">YOUR CONVERSATIONS</p>
+            <div id="chatHistory" class="chat-history">
+                <p class="empty-history">Your conversations will appear here.</p>
+            </div>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-info">
+                <span>🌱</span>
+                <div>
+                    <strong>Sakhi 2.0</strong>
+                    <small>Government Scheme Assistant</small>
+                </div>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <button class="menu-btn" id="menuBtn"
+                aria-label="Toggle sidebar">
+                ☰
+            </button>
+
+            <div class="topbar-title">
+                <span>Government Scheme Assistant</span>
+            </div>
+
+            <div class="language-control">
+                <label for="languageSelect">Language</label>
+
+                <select id="languageSelect">
+                    <option value="en">English</option>
+                </select>
+
+                <span class="language-note">Currently supported</span>
+            </div>
+
+        </header>
+
+        <!-- CHAT AREA -->
+        <section class="chat-area" id="chatArea">
+
+            <!-- WELCOME SCREEN -->
+            <div class="welcome-screen" id="welcomeScreen">
+
+                <div class="welcome-icon">🌿</div>
+
+                <p class="welcome-eyebrow">
+                    YOUR GOVERNMENT SCHEME COMPANION
+                </p>
+
+                <h1>
+                    Government schemes,<br>
+                    made easier.
+                </h1>
+
+                <p class="welcome-description">
+                    Discover government schemes, understand eligibility,
+                    explore benefits and get application guidance using
+                    available government scheme documents.
+                </p>
+
+                <div class="suggestion-grid">
+
+                    <button class="suggestion-card"
+                        data-question="What government schemes are available for women?">
+                        <span class="suggestion-icon">👩</span>
+                        <strong>Women & Welfare</strong>
+                        <small>Discover support schemes</small>
+                    </button>
+
+                    <button class="suggestion-card"
+                        data-question="Explain PMEGP eligibility.">
+                        <span class="suggestion-icon">💼</span>
+                        <strong>Business & Startups</strong>
+                        <small>Explore financial assistance</small>
+                    </button>
+
+                    <button class="suggestion-card"
+                        data-question="What government scholarship schemes are available for students?">
+                        <span class="suggestion-icon">🎓</span>
+                        <strong>Education</strong>
+                        <small>Explore scholarship schemes</small>
+                    </button>
+
+                    <button class="suggestion-card"
+                        data-question="Which documents are required to apply for a government scheme?">
+                        <span class="suggestion-icon">📄</span>
+                        <strong>Application Guidance</strong>
+                        <small>Understand required documents</small>
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- MESSAGES -->
+            <div class="messages-container" id="messagesContainer"></div>
+
+        </section>
+
+        <!-- COMPOSER -->
+        <footer class="composer-area">
+
+            <div class="composer-box">
+
+                <textarea
+                    id="messageInput"
+                    rows="1"
+                    maxlength="500"
+                    placeholder="Ask Sakhi about government schemes..."
+                    aria-label="Enter your question"
+                ></textarea>
+
+                <div class="composer-actions">
+
+                    <div class="composer-left">
+                        <button id="voiceBtn" class="icon-btn"
+                            title="Speak your question"
+                            aria-label="Voice input">
+                            🎙️
+                        </button>
+
+                        <span id="voiceStatus" class="voice-status"></span>
+                    </div>
+
+                    <div class="composer-right">
+                        <span id="characterCount">0/500</span>
+
+                        <button id="sendBtn" class="send-btn"
+                            aria-label="Send message">
+                            ➤
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <p class="disclaimer">
+                Sakhi provides information based on available scheme documents.
+                Always verify important details with the official scheme authority.
+            </p>
+
+        </footer>
+
+    </main>
+
+</div>
+
+<script>
+
+// ==========================================
+// CONFIGURATION
+// ==========================================
+
+const API_URL =
+    "https://shrill-cloud-7875sakhi-backend.raghuwarnaerugurala7.workers.dev";
+
+const STORAGE_KEY = "sakhi2_conversations_v1";
+
+const messageInput = document.getElementById("messageInput");
+const sendBtn = document.getElementById("sendBtn");
+const messagesContainer = document.getElementById("messagesContainer");
+const welcomeScreen = document.getElementById("welcomeScreen");
+const languageSelect = document.getElementById("languageSelect");
+const chatHistory = document.getElementById("chatHistory");
+const voiceBtn = document.getElementById("voiceBtn");
+const voiceStatus = document.getElementById("voiceStatus");
+const chatArea = document.getElementById("chatArea");
+
+let conversations = [];
+let currentConversation = [];
+let isLoading = false;
+let currentChatId = Date.now();
+
+
+// ==========================================
+// LOCAL STORAGE
+// ==========================================
+
+function loadSavedConversations() {
+
+    try {
+
+        const saved = localStorage.getItem(STORAGE_KEY);
+
+        if (!saved) return [];
+
+        const parsed = JSON.parse(saved);
+
+        return Array.isArray(parsed) ? parsed : [];
+
+    } catch (error) {
+
+        console.error("Could not load saved conversations:", error);
+
+        return [];
+
+    }
+
+}
+
+
+function persistConversations() {
+
+    try {
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(conversations)
+        );
+
+    } catch (error) {
+
+        console.error("Could not save conversations:", error);
+
+    }
+
+}
+
+
+// ==========================================
+// SAFE MARKDOWN RENDERER
+// ==========================================
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+function formatInlineMarkdown(text) {
+
+    let safe = escapeHTML(text);
+
+    safe = safe.replace(
+        /\\([\\`*_{}\[\]()#+.!>~-])/g,
+        "$1"
+    );
+
+    safe = safe.replace(
+        /`([^`]+)`/g,
+        "<code>$1</code>"
+    );
+
+    safe = safe.replace(
+        /\*\*(.+?)\*\*/g,
+        "<strong>$1</strong>"
+    );
+
+    safe = safe.replace(
+        /__(.+?)__/g,
+        "<strong>$1</strong>"
+    );
+
+    safe = safe.replace(
+        /(?<!\*)\*([^*\n]+)\*(?!\*)/g,
+        "<em>$1</em>"
+    );
+
+    safe = safe.replace(
+        /(?<!_)_([^_\n]+)_(?!_)/g,
+        "<em>$1</em>"
+    );
+
+    return safe;
+
+}
+
+
+function renderMarkdown(content) {
+
+    if (!content) return "";
+
+    const normalized = String(content)
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .trim();
+
+    if (!normalized) return "";
+
+    const lines = normalized.split("\n");
+
+    let html = "";
+    let paragraph = [];
+    let listType = null;
+
+    function closeParagraph() {
+
+        if (paragraph.length > 0) {
+
+            html += `<p>${paragraph
+                .map(line => formatInlineMarkdown(line))
+                .join("<br>")}</p>`;
+
+            paragraph = [];
+
+        }
+
+    }
+
+
+    function closeList() {
+
+        if (listType) {
+
+            html += listType === "ol" ? "</ol>" : "</ul>";
+
+            listType = null;
+
+        }
+
+    }
+
+
+    lines.forEach(rawLine => {
+
+        const line = rawLine.trim();
+
+        if (!line) {
+
+            closeParagraph();
+            closeList();
+
+            return;
+
+        }
+
+        const unordered = line.match(/^[-*+]\s+(.+)$/);
+        const ordered = line.match(/^\d+[.)]\s+(.+)$/);
+
+        if (unordered || ordered) {
+
+            closeParagraph();
+
+            const newType = unordered ? "ul" : "ol";
+
+            if (listType !== newType) {
+
+                closeList();
+
+                html += newType === "ul" ? "<ul>" : "<ol>";
+
+                listType = newType;
+
+            }
+
+            const item = unordered ? unordered[1] : ordered[1];
+
+            html += `<li>${formatInlineMarkdown(item)}</li>`;
+
+            return;
+
+        }
+
+        closeList();
+
+        const heading = line.match(/^#{1,3}\s+(.+)$/);
+
+        if (heading) {
+
+            closeParagraph();
+
+            html += `<p><strong>${formatInlineMarkdown(
+                heading[1]
+            )}</strong></p>`;
+
+            return;
+
+        }
+
+        paragraph.push(line);
+
+    });
+
+    closeParagraph();
+    closeList();
+
+    return html;
+
+}
+
+
+// ==========================================
+// SCROLL TO LATEST MESSAGE
+// ==========================================
+
+function scrollToLatest() {
+
+    requestAnimationFrame(() => {
+
+        chatArea.scrollTop = chatArea.scrollHeight;
+
+    });
+
+}
+
+
+// ==========================================
+// NEW CONVERSATION
+// ==========================================
+
+function newConversation() {
+
+    currentConversation = [];
+
+    messagesContainer.replaceChildren();
+
+    welcomeScreen.style.display = "flex";
+
+    messageInput.value = "";
+
+    updateCharacterCount();
+
+    renderHistory();
+
+    stopSpeaking();
+
+}
+
+
+// ==========================================
+// ADD MESSAGE
+// ==========================================
+
+function addMessage(role, content, options = {}) {
+
+    const message = document.createElement("div");
+
+    message.className = `message ${role}-message`;
+
+    const avatar = document.createElement("div");
+
+    avatar.className = "message-avatar";
+
+    avatar.textContent = role === "user" ? "👤" : "🌿";
+
+    const contentBox = document.createElement("div");
+
+    contentBox.className = "message-content";
+
+    const sender = document.createElement("div");
+
+    sender.className = "message-sender";
+
+    sender.textContent = role === "user" ? "You" : "Sakhi";
+
+    const text = document.createElement("div");
+
+    text.className = "message-text";
+
+    if (role === "assistant") {
+
+        text.innerHTML = renderMarkdown(content);
+
+    } else {
+
+        text.textContent = content;
+
+    }
+
+    contentBox.append(sender, text);
+
+    if (role === "assistant" && options.showReadAloud !== false) {
+
+        const tools = document.createElement("div");
+
+        tools.className = "message-tools";
+
+        const readButton = document.createElement("button");
+
+        readButton.className = "read-aloud-btn";
+
+        readButton.type = "button";
+
+        readButton.textContent = "🔊 Read aloud";
+
+        readButton.addEventListener("click", () => {
+
+            speakAnswer(content);
+
+        });
+
+        tools.appendChild(readButton);
+
+        contentBox.appendChild(tools);
+
+    }
+
+    message.append(avatar, contentBox);
+
+    messagesContainer.appendChild(message);
+
+    scrollToLatest();
+
+    return { message, contentBox };
+
+}
+
+
+// ==========================================
+// DISPLAY SOURCE DOCUMENTS
+// ==========================================
+
+function displaySources(parent, sources) {
+
+    if (!Array.isArray(sources) || sources.length === 0) {
+
+        return;
+
+    }
+
+    const sourceSection = document.createElement("div");
+
+    sourceSection.className = "sources-section";
+
+    const sourceHeading = document.createElement("strong");
+
+    sourceHeading.className = "sources-heading";
+
+    sourceHeading.textContent =
+        `📚 Retrieved sources (${sources.length})`;
+
+    sourceSection.appendChild(sourceHeading);
+
+    sources.forEach(source => {
+
+        const details = document.createElement("details");
+
+        details.className = "source-card";
+
+        const summary = document.createElement("summary");
+
+        const filename = document.createElement("span");
+
+        filename.className = "source-filename";
+
+        filename.textContent =
+            source.filename || "Scheme document";
+
+        const page = document.createElement("span");
+
+        page.className = "source-page";
+
+        page.textContent = source.page != null
+            ? `Page ${source.page}`
+            : "Page unavailable";
+
+        summary.append(filename, page);
+
+        const metadata = document.createElement("p");
+
+        metadata.className = "source-metadata";
+
+        metadata.textContent =
+            `Reference: ${source.source_id || "Source"} · ` +
+            `Chunk: ${source.chunk_id ?? "N/A"}`;
+
+        details.append(summary, metadata);
+
+        sourceSection.appendChild(details);
+
+    });
+
+    parent.appendChild(sourceSection);
+
+    scrollToLatest();
+
+}
+
+
+// ==========================================
+// LOADING INDICATOR
+// ==========================================
+
+function showLoading() {
+
+    const loading = document.createElement("div");
+
+    loading.className = "message assistant-message";
+
+    loading.id = "loadingMessage";
+
+    const avatar = document.createElement("div");
+
+    avatar.className = "message-avatar";
+
+    avatar.textContent = "🌿";
+
+    const text = document.createElement("div");
+
+    text.className = "loading-text";
+
+    text.textContent =
+        "Sakhi is finding relevant scheme information...";
+
+    loading.append(avatar, text);
+
+    messagesContainer.appendChild(loading);
+
+    scrollToLatest();
+
+}
+
+
+// ==========================================
+// SAVE CONVERSATION
+// ==========================================
+
+function saveCurrentConversation(firstQuestion) {
+
+    const existing = conversations.find(
+        chat => chat.id === currentChatId
+    );
+
+    if (existing) {
+
+        existing.messages = [...currentConversation];
+
+    } else {
+
+        conversations.unshift({
+
+            id: currentChatId,
+
+            title: firstQuestion.slice(0, 35),
+
+            messages: [...currentConversation]
+
+        });
+
+    }
+
+    persistConversations();
+
+    renderHistory();
+
+}
+
+
+// ==========================================
+// SEND QUESTION TO BACKEND
+// ==========================================
+
+async function sendMessage(question = null) {
+
+    if (isLoading) return;
+
+    const query = (question || messageInput.value).trim();
+
+    if (!query) return;
+
+    if (query.length > 500) {
+
+        alert("Please keep your question within 500 characters.");
+
+        return;
+
+    }
+
+    welcomeScreen.style.display = "none";
+
+    addMessage("user", query);
+
+    currentConversation.push({
+
+        role: "user",
+
+        content: query
+
+    });
+
+    messageInput.value = "";
+
+    updateCharacterCount();
+
+    isLoading = true;
+
+    sendBtn.disabled = true;
+
+    showLoading();
+
+    try {
+
+        const response = await fetch(`${API_URL}/ask`, {
+
+            method: "POST",
+
+            headers: {
+
+                "Content-Type": "application/json"
+
+            },
+
+            body: JSON.stringify({
+
+                query: query,
+
+                source_lang: "en"
+
+            })
+
+        });
+
+        let data;
+
+        try {
+
+            data = await response.json();
+
+        } catch {
+
+            throw new Error(
+                "The server returned an invalid response."
+            );
+
+        }
+
+        // Handle genuine HTTP errors separately.
+        if (!response.ok) {
+
+            throw new Error(
+
+                data.message ||
+
+                data.error ||
+
+                `Request failed with HTTP status ${response.status}.`
+
+            );
+
+        }
+
+        // ======================================
+        // IMPORTANT FIX:
+        // insufficient_evidence is a valid
+        // backend response, not a connection error.
+        // ======================================
+
+        const isInsufficientEvidence =
+            data.status === "insufficient_evidence";
+
+        if (
+            data.status &&
+            data.status !== "success" &&
+            !isInsufficientEvidence
+        ) {
+
+            throw new Error(
+
+                data.message ||
+
+                data.error ||
+
+                `Sakhi request failed: ${data.status}`
+
+            );
+
+        }
+
+        document.getElementById("loadingMessage")?.remove();
+
+        // Display the backend answer, including
+        // the insufficient-evidence refusal.
+        const answer = data.answer ||
+
+            "I could not find sufficient information in the available scheme documents to answer this question reliably.";
+
+        const assistantMessage = addMessage("assistant", answer);
+
+        // Display sources when available.
+        displaySources(
+
+            assistantMessage.contentBox,
+
+            data.sources
+
+        );
+
+        // Save the answer and sources in conversation history.
+        currentConversation.push({
+
+            role: "assistant",
+
+            content: answer,
+
+            sources: data.sources || []
+
+        });
+
+        saveCurrentConversation(query);
+
+    } catch (error) {
+
+        document.getElementById("loadingMessage")?.remove();
+
+        console.error("Sakhi API error:", error);
+
+        // Display a more accurate error message.
+        let errorMessage;
+
+        if (
+            error instanceof TypeError &&
+            error.message.toLowerCase().includes("fetch")
+        ) {
+
+            errorMessage =
+                "Sakhi could not reach the backend. Please check your internet connection and try again.";
+
+        } else {
+
+            errorMessage =
+                error.message ||
+                "An unexpected error occurred while contacting Sakhi.";
+
+        }
+
+        const errorElement = addMessage(
+
+            "assistant",
+
+            errorMessage
+
+        );
+
+        errorElement.message.classList.add("api-error");
+
+    } finally {
+
+        isLoading = false;
+
+        sendBtn.disabled = false;
+
+        messageInput.focus();
+
+    }
+
+}
+
+
+// ==========================================
+// CHAT HISTORY
+// ==========================================
+
+function renderHistory() {
+
+    chatHistory.replaceChildren();
+
+    if (conversations.length === 0) {
+
+        const empty = document.createElement("p");
+
+        empty.className = "empty-history";
+
+        empty.textContent =
+            "Your conversations will appear here.";
+
+        chatHistory.appendChild(empty);
+
+        return;
+
+    }
+
+    conversations.forEach(chat => {
+
+        const button = document.createElement("button");
+
+        button.className = "history-item";
+
+        if (chat.id === currentChatId) {
+
+            button.classList.add("active");
+
+        }
+
+        button.textContent = chat.title || "New conversation";
+
+        button.title = chat.title || "New conversation";
+
+        button.addEventListener("click", () => {
+
+            loadConversation(chat.id);
+
+        });
+
+        chatHistory.appendChild(button);
+
+    });
+
+}
+
+
+// ==========================================
+// OPEN PREVIOUS CONVERSATION
+// ==========================================
+
+function loadConversation(id) {
+
+    const selected = conversations.find(
+
+        chat => chat.id === id
+
+    );
+
+    if (!selected) return;
+
+    if (isLoading) return;
+
+    currentChatId = id;
+
+    currentConversation = [...selected.messages];
+
+    messagesContainer.replaceChildren();
+
+    welcomeScreen.style.display = "none";
+
+    currentConversation.forEach(message => {
+
+        const rendered = addMessage(
+
+            message.role,
+
+            message.content
+
+        );
+
+        if (
+
+            message.role === "assistant" &&
+
+            Array.isArray(message.sources)
+
+        ) {
+
+            displaySources(
+
+                rendered.contentBox,
+
+                message.sources
+
+            );
+
+        }
+
+    });
+
+    renderHistory();
+
+    scrollToLatest();
+
+    document.getElementById("sidebar")
+        .classList.remove("sidebar-open");
+
+}
+
+
+// ==========================================
+// CHARACTER COUNTER
+// ==========================================
+
+function updateCharacterCount() {
+
+    document.getElementById("characterCount").textContent =
+
+        `${messageInput.value.length}/500`;
+
+}
+
+messageInput.addEventListener("input", updateCharacterCount);
+
+
+// ==========================================
+// SEND BUTTON
+// ==========================================
+
+sendBtn.addEventListener("click", () => {
+
+    sendMessage();
+
+});
+
+
+// ==========================================
+// ENTER TO SEND
+// ==========================================
+
+messageInput.addEventListener("keydown", event => {
+
+    if (event.key === "Enter" && !event.shiftKey) {
+
+        event.preventDefault();
+
+        sendMessage();
+
+    }
+
+});
+
+
+// ==========================================
+// SUGGESTED QUESTIONS
+// ==========================================
+
+document.querySelectorAll(".suggestion-card").forEach(card => {
+
+    card.addEventListener("click", () => {
+
+        sendMessage(card.dataset.question);
+
+    });
+
+});
+
+
+// ==========================================
+// NEW CHAT
+// ==========================================
+
+document.getElementById("newChatBtn").addEventListener("click", () => {
+
+    if (isLoading) return;
+
+    currentChatId = Date.now();
+
+    newConversation();
+
+});
+
+
+// ==========================================
+// MOBILE SIDEBAR
+// ==========================================
+
+document.getElementById("menuBtn").addEventListener("click", () => {
+
+    document.getElementById("sidebar")
+        .classList.toggle("sidebar-open");
+
+});
+
+
+// ==========================================
+// VOICE INPUT
+// ==========================================
+
+const SpeechRecognition =
+
+    window.SpeechRecognition ||
+
+    window.webkitSpeechRecognition;
+
+let recognition = null;
+
+if (SpeechRecognition) {
+
+    recognition = new SpeechRecognition();
+
+    recognition.continuous = false;
+
+    recognition.interimResults = false;
+
+    recognition.lang = "en-IN";
+
+    voiceBtn.addEventListener("click", () => {
+
+        recognition.lang = "en-IN";
+
+        voiceStatus.textContent = "Listening...";
+
+        try {
+
+            recognition.start();
+
+        } catch (error) {
+
+            voiceStatus.textContent = "Please try again.";
+
+        }
+
+    });
+
+
+    recognition.onresult = event => {
+
+        const transcript =
+
+            event.results[0][0].transcript;
+
+        messageInput.value = transcript;
+
+        updateCharacterCount();
+
+        voiceStatus.textContent = "Voice captured.";
+
+    };
+
+
+    recognition.onerror = event => {
+
+        console.error("Speech recognition error:", event.error);
+
+        voiceStatus.textContent =
+
+            event.error === "not-allowed"
+
+                ? "Microphone permission denied."
+
+                : "Voice recognition failed.";
+
+    };
+
+
+    recognition.onend = () => {
+
+        if (voiceStatus.textContent === "Listening...") {
+
+            voiceStatus.textContent = "";
+
+        }
+
+    };
+
+} else {
+
+    voiceBtn.disabled = true;
+
+    voiceStatus.textContent =
+
+        "Voice input unavailable in this browser.";
+
+}
+
+
+// ==========================================
+// READ SAKHI'S ANSWER ALOUD
+// ==========================================
+
+function speakAnswer(text) {
+
+    if (!("speechSynthesis" in window)) {
+
+        alert("Speech playback is not supported in this browser.");
+
+        return;
+
+    }
+
+    stopSpeaking();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    utterance.lang = "en-IN";
+
+    utterance.rate = 0.95;
+
+    utterance.pitch = 1;
+
+    window.speechSynthesis.speak(utterance);
+
+}
+
+
+function stopSpeaking() {
+
+    if ("speechSynthesis" in window) {
+
+        window.speechSynthesis.cancel();
+
+    }
+
+}
+
+
+// ==========================================
+// INITIALIZE
+// ==========================================
+
+conversations = loadSavedConversations();
+
+renderHistory();
+
+updateCharacterCount();
+
+</script>
+
+</body>
+</html>
