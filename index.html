@@ -668,71 +668,117 @@ function addMessage(role, content, options = {}) {
 // ==========================================
 
 function displaySources(parent, sources) {
+    if (!Array.isArray(sources) || sources.length === 0) return;
 
-    if (!Array.isArray(sources) || sources.length === 0) {
+    // Friendly titles for commonly retrieved scheme documents
+    const documentTitles = {
+        "pmegp.pdf":
+            "Prime Minister's Employment Generation Programme (PMEGP)",
+        "pmfmpe.pdf":
+            "Pradhan Mantri Formalisation of Micro Food Processing Enterprises (PMFME)",
+        "pmfme.pdf":
+            "Pradhan Mantri Formalisation of Micro Food Processing Enterprises (PMFME)",
+        "day-nrlm.pdf":
+            "Deendayal Antyodaya Yojana – National Rural Livelihoods Mission",
+        "sisfs-fi.pdf":
+            "Startup India Seed Fund Scheme (SISFS)",
+        "pahal-dbtl.pdf":
+            "PAHAL – Direct Benefit Transfer Scheme",
+        "sfirti.pdf":
+            "Scheme of Fund for Regeneration of Traditional Industries (SFURTI)"
+    };
 
-        return;
+    function getDocumentTitle(filename) {
+        const name = String(filename || "scheme-document")
+            .split(/[\\/]/).pop();
 
+        const key = name.toLowerCase();
+
+        if (documentTitles[key]) return documentTitles[key];
+
+        return name
+            .replace(/\.pdf$/i, "")
+            .replace(/[-_]+/g, " ")
+            .replace(/\b\w/g, letter => letter.toUpperCase());
     }
 
-    const sourceSection = document.createElement("div");
+    // Group passages belonging to the same PDF page
+    const groupedSources = new Map();
 
+    sources.forEach(source => {
+        const filename = String(source.filename || "scheme-document");
+        const page = source.page ?? "Unknown";
+        const key = `${filename.toLowerCase()}::${page}`;
+
+        if (!groupedSources.has(key)) {
+            groupedSources.set(key, {
+                filename,
+                page,
+                items: []
+            });
+        }
+
+        groupedSources.get(key).items.push(source);
+    });
+
+    const uniqueSources = [...groupedSources.values()];
+
+    const sourceSection = document.createElement("div");
     sourceSection.className = "sources-section";
 
     const sourceHeading = document.createElement("strong");
-
     sourceHeading.className = "sources-heading";
-
     sourceHeading.textContent =
-        `📚 Retrieved sources (${sources.length})`;
+        `📚 Sources (${sources.length} passages · ${uniqueSources.length} unique pages)`;
 
     sourceSection.appendChild(sourceHeading);
 
-    sources.forEach(source => {
-
+    uniqueSources.forEach(group => {
         const details = document.createElement("details");
-
         details.className = "source-card";
 
         const summary = document.createElement("summary");
 
         const filename = document.createElement("span");
-
         filename.className = "source-filename";
-
-        filename.textContent =
-            source.filename || "Scheme document";
+        filename.textContent = getDocumentTitle(group.filename);
 
         const page = document.createElement("span");
-
         page.className = "source-page";
-
-        page.textContent = source.page != null
-            ? `Page ${source.page}`
-            : "Page unavailable";
+        page.textContent = `Page ${group.page}`;
 
         summary.append(filename, page);
 
         const metadata = document.createElement("p");
-
         metadata.className = "source-metadata";
 
-        metadata.textContent =
-            `Reference: ${source.source_id || "Source"} · ` +
-            `Chunk: ${source.chunk_id ?? "N/A"}`;
+        const sourceIds = [...new Set(
+            group.items.map(item => item.source_id).filter(Boolean)
+        )];
+
+        const chunkIds = [...new Set(
+            group.items.map(item => item.chunk_id).filter(id => id != null)
+        )];
+
+        const metadataParts = [];
+
+        if (sourceIds.length) {
+            metadataParts.push(`Cited as: ${sourceIds.join(", ")}`);
+        }
+
+        if (chunkIds.length) {
+            metadataParts.push(`Evidence chunks: ${chunkIds.join(", ")}`);
+        }
+
+        metadata.textContent = metadataParts.join(" · ");
 
         details.append(summary, metadata);
-
         sourceSection.appendChild(details);
-
     });
 
     parent.appendChild(sourceSection);
-
     scrollToLatest();
-
 }
-
 
 // ==========================================
 // LOADING INDICATOR
