@@ -1,0 +1,25 @@
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Secrets and credentials
+.env.*
+secrets/
+*.pem
+*.key
+
+# Large datasets and model files
+*.index
+*.faiss
+chunk_metadata.csv
+*.parquet
+*.zip
+
+# Temporary files
+.DS_Store
+Thumbs.db
+*.log
