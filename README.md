@@ -106,3 +106,8 @@ Building accessible AI-powered solutions for public information discovery.
 ## Documentation
 
 - [System Architecture](docs/architecture.md) – Understand Sakhi 2.0's architecture, components, database, AI model, and request workflow.
+## License
+
+Copyright © 2026 Raghuwarna Erugurala. All rights reserved.
+
+This repository is publicly available for viewing and educational reference. No permission is granted to copy, modify, redistribute, or use this project commercially without prior written permission from the author.
