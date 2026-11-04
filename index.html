@@ -668,45 +668,24 @@ function addMessage(role, content, options = {}) {
 // ==========================================
 
 function displaySources(parent, sources) {
-    if (!Array.isArray(sources) || sources.length === 0) return;
-
-    // Friendly titles for commonly retrieved scheme documents
-    const documentTitles = {
-        "pmegp.pdf":
-            "Prime Minister's Employment Generation Programme (PMEGP)",
-        "pmfmpe.pdf":
-            "Pradhan Mantri Formalisation of Micro Food Processing Enterprises (PMFME)",
-        "pmfme.pdf":
-            "Pradhan Mantri Formalisation of Micro Food Processing Enterprises (PMFME)",
-        "day-nrlm.pdf":
-            "Deendayal Antyodaya Yojana – National Rural Livelihoods Mission",
-        "sisfs-fi.pdf":
-            "Startup India Seed Fund Scheme (SISFS)",
-        "pahal-dbtl.pdf":
-            "PAHAL – Direct Benefit Transfer Scheme",
-        "sfirti.pdf":
-            "Scheme of Fund for Regeneration of Traditional Industries (SFURTI)"
-    };
-
-    function getDocumentTitle(filename) {
-        const name = String(filename || "scheme-document")
-            .split(/[\\/]/).pop();
-
-        const key = name.toLowerCase();
-
-        if (documentTitles[key]) return documentTitles[key];
-
-        return name
-            .replace(/\.pdf$/i, "")
-            .replace(/[-_]+/g, " ")
-            .replace(/\b\w/g, letter => letter.toUpperCase());
+    if (!Array.isArray(sources) || sources.length === 0) {
+        return;
     }
 
-    // Group passages belonging to the same PDF page
+    const documentTitles = {
+        "pmegp.pdf": "Prime Minister's Employment Generation Programme (PMEGP)",
+        "pmfmpe.pdf": "Pradhan Mantri Formalisation of Micro Food Processing Enterprises (PMFME)",
+        "pmfme.pdf": "Pradhan Mantri Formalisation of Micro Food Processing Enterprises (PMFME)",
+        "day-nrlm.pdf": "Deendayal Antyodaya Yojana – National Rural Livelihoods Mission",
+        "sisfs-fi.pdf": "Startup India Seed Fund Scheme (SISFS)",
+        "pahal-dbtl.pdf": "PAHAL – Direct Benefit Transfer Scheme",
+        "sfirti.pdf": "Scheme of Fund for Regeneration of Traditional Industries (SFURTI)"
+    };
+
     const groupedSources = new Map();
 
     sources.forEach(source => {
-        const filename = String(source.filename || "scheme-document");
+        const filename = source.filename || "Scheme document";
         const page = source.page ?? "Unknown";
         const key = `${filename.toLowerCase()}::${page}`;
 
@@ -714,14 +693,37 @@ function displaySources(parent, sources) {
             groupedSources.set(key, {
                 filename,
                 page,
-                items: []
+                sourceIds: [],
+                chunkIds: [],
+                vectorIds: []
             });
         }
 
-        groupedSources.get(key).items.push(source);
+        const group = groupedSources.get(key);
+
+        if (
+            source.source_id != null &&
+            !group.sourceIds.includes(source.source_id)
+        ) {
+            group.sourceIds.push(source.source_id);
+        }
+
+        if (
+            source.chunk_id != null &&
+            !group.chunkIds.includes(source.chunk_id)
+        ) {
+            group.chunkIds.push(source.chunk_id);
+        }
+
+        if (
+            source.vector_id != null &&
+            !group.vectorIds.includes(source.vector_id)
+        ) {
+            group.vectorIds.push(source.vector_id);
+        }
     });
 
-    const uniqueSources = [...groupedSources.values()];
+    const uniqueSources = Array.from(groupedSources.values());
 
     const sourceSection = document.createElement("div");
     sourceSection.className = "sources-section";
@@ -729,48 +731,64 @@ function displaySources(parent, sources) {
     const sourceHeading = document.createElement("strong");
     sourceHeading.className = "sources-heading";
     sourceHeading.textContent =
-        `📚 Sources (${sources.length} passages · ${uniqueSources.length} unique pages)`;
+        `📚 Retrieved sources (${sources.length} passages · ${uniqueSources.length} unique pages)`;
 
     sourceSection.appendChild(sourceHeading);
 
-    uniqueSources.forEach(group => {
+    uniqueSources.forEach(item => {
         const details = document.createElement("details");
         details.className = "source-card";
 
         const summary = document.createElement("summary");
 
-        const filename = document.createElement("span");
-        filename.className = "source-filename";
-        filename.textContent = getDocumentTitle(group.filename);
+        const filename = item.filename.toLowerCase();
 
-        const page = document.createElement("span");
-        page.className = "source-page";
-        page.textContent = `Page ${group.page}`;
+        const title = documentTitles[filename] ||
+            item.filename
+                .replace(/\.pdf$/i, "")
+                .replace(/[-_]/g, " ")
+                .replace(/\b\w/g, char => char.toUpperCase());
 
-        summary.append(filename, page);
+        const titleElement = document.createElement("span");
+        titleElement.className = "source-filename";
+        titleElement.textContent = title;
 
-        const metadata = document.createElement("p");
+        const pageElement = document.createElement("span");
+        pageElement.className = "source-page";
+
+        const citationLabels = item.sourceIds
+            .map(id => `[${id}]`)
+            .join(" ");
+
+        pageElement.textContent =
+            `Page ${item.page} · ${citationLabels || "No citation ID"}`;
+
+        summary.append(titleElement, pageElement);
+
+        const metadata = document.createElement("div");
         metadata.className = "source-metadata";
 
-        const sourceIds = [...new Set(
-            group.items.map(item => item.source_id).filter(Boolean)
-        )];
+        const referenceLine = document.createElement("p");
+        referenceLine.textContent =
+            `Citation references: ${citationLabels || "Not available"}`;
 
-        const chunkIds = [...new Set(
-            group.items.map(item => item.chunk_id).filter(id => id != null)
-        )];
+        const chunkLine = document.createElement("p");
+        chunkLine.textContent =
+            `Evidence chunk IDs: ${
+                item.chunkIds.length
+                    ? item.chunkIds.join(", ")
+                    : "Not available"
+            }`;
 
-        const metadataParts = [];
+        const vectorLine = document.createElement("p");
+        vectorLine.textContent =
+            `Vector IDs: ${
+                item.vectorIds.length
+                    ? item.vectorIds.join(", ")
+                    : "Not available"
+            }`;
 
-        if (sourceIds.length) {
-            metadataParts.push(`Cited as: ${sourceIds.join(", ")}`);
-        }
-
-        if (chunkIds.length) {
-            metadataParts.push(`Evidence chunks: ${chunkIds.join(", ")}`);
-        }
-
-        metadata.textContent = metadataParts.join(" · ");
+        metadata.append(referenceLine, chunkLine, vectorLine);
 
         details.append(summary, metadata);
         sourceSection.appendChild(details);
@@ -779,7 +797,6 @@ function displaySources(parent, sources) {
     parent.appendChild(sourceSection);
     scrollToLatest();
 }
-
 // ==========================================
 // LOADING INDICATOR
 // ==========================================
