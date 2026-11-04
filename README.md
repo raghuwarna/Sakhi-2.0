@@ -1,10 +1,12 @@
-metadata
+---
 title: Sakhi 2.0
 emoji: 🤝
 colorFrom: green
 colorTo: blue
-sdk: docker
+sdk: static
+app_file: index.html
 pinned: false
+---
 Sakhi 2.0 – AI-Powered Government Scheme Assistant
 Making Indian Government Schemes Easier to Understand.
 
